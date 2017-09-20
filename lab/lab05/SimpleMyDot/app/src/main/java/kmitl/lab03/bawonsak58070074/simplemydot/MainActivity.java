@@ -31,18 +31,6 @@ import kmitl.lab03.bawonsak58070074.simplemydot.view.DotView;
 
 public class MainActivity extends AppCompatActivity {
 
-    // share button
-    private ShareButton shareButton;
-    //image
-    //counter
-    private int counter = 0;
-
-    private File imagePath;
-
-    private Bitmap bitmap;
-
-    private DotView dotView;
-    private Dots dots;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

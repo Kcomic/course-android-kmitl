@@ -37,13 +37,13 @@ public class Dots {
         this.listener.onDotsChanged(this);
     }
 
-    public int findDot(int x, int y) {
+    public int findDot(float x, float y) {
         for (int i = 0; i < allDot.size(); i++) {
             float centerX = allDot.get(i).getCenterX();
             float centerY = allDot.get(i).getCenterY();
             double distance = Math.sqrt(Math.pow(centerX - x, 2)) +
                     Math.sqrt(Math.pow(centerY - y, 2));
-            if (distance <= 30) {
+            if (distance <= allDot.get(i).getRadius()) {
                 return i;
             }
         }

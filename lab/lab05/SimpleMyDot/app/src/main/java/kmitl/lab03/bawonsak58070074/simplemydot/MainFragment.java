@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -34,7 +35,7 @@ import kmitl.lab03.bawonsak58070074.simplemydot.view.DotView;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainFragment extends Fragment implements Dots.OnDotsChangeListener, DotView.OnDotViewPressListener {
+public class MainFragment extends Fragment implements Dots.OnDotsChangeListener, DotView.OnDotViewPressListener, EditDotFragment.EditDotFragmentListener {
 
     private File imagePath;
 
@@ -98,7 +99,7 @@ public class MainFragment extends Fragment implements Dots.OnDotsChangeListener,
         Random random = new Random();
         int centerX = random.nextInt(dotView.getWidth());
         int centerY = random.nextInt(dotView.getHeight());
-        Dot newDot = new Dot(centerX, centerY, 30, new Colors().getColor());
+        Dot newDot = new Dot(centerX, centerY, 50, new Colors().randomColor());
         dots.addDot(newDot);
     }
 
@@ -110,13 +111,28 @@ public class MainFragment extends Fragment implements Dots.OnDotsChangeListener,
 
 
     @Override
-    public void onDotViewPressed(int x, int y) {
+    public void onDotViewPressed(float x, float y) {
         int dotPosition = dots.findDot(x, y);
         if(dotPosition == -1) {
-            Dot newDot = new Dot(x, y, 30, new Colors().getColor());
+            Dot newDot = new Dot(x, y, 50, new Colors().randomColor());
             dots.addDot(newDot);
         } else {
             dots.removeBy(dotPosition);
+        }
+    }
+
+    @Override
+    public void onDotViewLongPressed(float x, float y) {
+        int position = dots.findDot(x, y);
+        if (position == -1) {
+            Dot dot = new Dot(x, y, 50, new Colors().getColor());
+            dots.addDot(dot);
+        } else {
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .add(R.id.fragmentContainer, new EditDotFragment().newInstance(dots.getAllDot().get(position), position, MainFragment.this))
+                    .addToBackStack("simpleMyDotFragment")
+                    .commit();
         }
     }
 
@@ -173,4 +189,11 @@ public class MainFragment extends Fragment implements Dots.OnDotsChangeListener,
     }
 
 
+    @Override
+    public void EditDotFinished(Dot dot, int position) {
+        if(position != -1) {
+            dots.getAllDot().set(position, dot);
+            dotView.invalidate();
+        }
+    }
 }

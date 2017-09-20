@@ -17,7 +17,6 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onRandomDot"
         android:text="@string/random_dot"
         android:layout_marginStart="16dp"
         android:id="@+id/random_btn"
@@ -32,7 +31,6 @@
         android:id="@+id/remove_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onRemove"
         android:text="@string/remove"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
@@ -47,7 +45,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/share"
-        android:onClick="onShare"
         tools:layout_constraintBottom_creator="1"
         android:layout_marginStart="39dp"
         app:layout_constraintBottom_toBottomOf="parent"
