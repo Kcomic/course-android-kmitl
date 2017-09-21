@@ -125,7 +125,7 @@ public class MainFragment extends Fragment implements Dots.OnDotsChangeListener,
     public void onDotViewLongPressed(float x, float y) {
         int position = dots.findDot(x, y);
         if (position == -1) {
-            Dot dot = new Dot(x, y, 50, new Colors().getColor());
+            Dot dot = new Dot(x, y, 50, new Colors().randomColor());
             dots.addDot(dot);
         } else {
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
