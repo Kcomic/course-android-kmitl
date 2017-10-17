@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">LazyInstagram</string>
+    <string name="user">Change User</string>
+    <string name="selectlayout">selectlayout</string>
+</resources>
