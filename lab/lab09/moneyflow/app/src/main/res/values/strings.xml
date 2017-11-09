@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">RoomDemo</string>
+    <string name="app_name">moneyflow</string>
+    <string name="detail">รายการ</string>
+    <string name="type">ประเภท</string>
+    <string name="income">รายรับ</string>
+    <string name="payment">รายจ่าย</string>
+    <string name="amount">จำนวนเงิน</string>
+    <string name="finish">บันทึก</string>
+    <string name="add">เพิ่ม</string>
+    <string name="balanceEX">500,000,000</string>
+    <string name="typeEX">+</string>
+    <string name="detailEX">เงินเดือน</string>
+    <string name="amountEX">10000</string>
 </resources>

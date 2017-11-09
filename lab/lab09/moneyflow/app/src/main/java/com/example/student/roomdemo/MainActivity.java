@@ -1,31 +1,43 @@
 package com.example.student.roomdemo;
 
 import android.arch.persistence.room.Room;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.Date;
+import com.example.student.roomdemo.Adapter.LedgerInfoAdapter;
+import com.example.student.roomdemo.Database.LedgerDB;
+import com.example.student.roomdemo.Model.Balance;
+import com.example.student.roomdemo.Model.LedgerInfo;
+
+import java.text.NumberFormat;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, LedgerInfoAdapter.LedgerInfoAdapterListener {
 
     private LedgerDB LedgerDB;
+    private LedgerInfoAdapter ledgerInfoAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        RecyclerView recyclerView = findViewById(R.id.ledgerList);
         LedgerDB = Room.databaseBuilder(getApplicationContext(),
-                LedgerDB.class, "LEDGER")
+                com.example.student.roomdemo.Database.LedgerDB.class, "LEDGER")
                 .build();
+        ledgerInfoAdapter = new LedgerInfoAdapter(this, this);
+        recyclerView.setAdapter(ledgerInfoAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         new AsyncTask<Void, Void, List<LedgerInfo>>(){
 
@@ -37,28 +49,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             protected void onPostExecute(List<LedgerInfo> LedgerInfos) {
-                ArrayAdapter<LedgerInfo> adaptor = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, LedgerInfos);
-                ListView messageInfoList = findViewById(R.id.LedgerList);
-                messageInfoList.setAdapter(adaptor);
+                ledgerInfoAdapter.setLedgerInfoList(LedgerInfos);
+                ledgerInfoAdapter.notifyDataSetChanged();
             }
         }.execute();
 
-        new AsyncTask<Void, Void, Integer>(){
+        new AsyncTask<Void, Void, Balance>(){
 
             @Override
-            protected Integer doInBackground(Void... voids) {
-                List<LedgerInfo> result = LedgerDB.getLedgerInfoDAO().findIncome();
-                result = LedgerDB.getLedgerInfoDAO().findPayment();
-                return 1000;
+            protected Balance doInBackground(Void... voids) {
+                Balance result = LedgerDB.getLedgerInfoDAO().findBalance();
+
+                return result;
             }
 
             @Override
-            protected void onPostExecute(Integer balance) {
-                TextView textView3 = findViewById(R.id.textView3);
-                int income = ledgerInfos.get(0).getValues();
-                int payment = ledgerInfos.get(0).getValues();
-                int balance = income-payment;
-                textView3.setText(balance+"");
+            protected void onPostExecute(Balance balance) {
+                TextView batv = findViewById(R.id.textView3);
+                int amount = balance.getBalance();
+                try {
+                    float ratio = (float)amount / balance.getIncome();
+                    if (ratio > 0.5) batv.setTextColor(Color.parseColor("#33FF00"));
+                    else if (ratio >= 0.25) batv.setTextColor(Color.parseColor("#FF9900"));
+                    else batv.setTextColor(Color.parseColor("#FF0000"));
+                } catch(Exception e){
+                    batv.setTextColor(Color.parseColor("#FF0000"));
+                }
+                batv.setText(NumberFormat.getNumberInstance().format(amount));
             }
         }.execute();
 
@@ -81,4 +98,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            }
 //        }.execute();
     }
+
+    @Override
+    public void onItemTouched(final LedgerInfo ledgerInfo) {
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage("ต้องการแก้ไข หรือลบออกจากรายการ?");
+        builder.setPositiveButton("แก้ไข", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                startIntent(ledgerInfo);
+            }
+        });
+        builder.setNegativeButton("ลบ", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                new AsyncTask<Void, Void, LedgerInfo>() {
+                    @Override
+                    protected LedgerInfo doInBackground(Void... voids) {
+                        LedgerDB.getLedgerInfoDAO().delete(ledgerInfo);
+                        finish();
+                        startActivity(getIntent());
+                        return null;
+                    }
+                }.execute();
+            }
+        });
+        builder.show();
+    }
+
+    private void startIntent(LedgerInfo ledgerInfo){
+        Intent intent = new Intent(this, AddLedger.class);
+        intent.putExtra("ledgerInfo", ledgerInfo);
+        finish();
+        startActivity(intent);
+    }
+
 }

@@ -10,14 +10,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.Date;
+import com.example.student.roomdemo.Database.LedgerDB;
+import com.example.student.roomdemo.Model.LedgerInfo;
 
 public class AddLedger extends AppCompatActivity implements View.OnClickListener {
     private LedgerDB LedgerDB;
     private Button okBtn;
     private TextView income, payment;
-    private int chk = 0;
+    private LedgerInfo ledgerInfo;
+    private int chk = 0, update = 0;
     private EditText text, value;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,14 +34,33 @@ public class AddLedger extends AppCompatActivity implements View.OnClickListener
         okBtn.setOnClickListener(this);
         income.setOnClickListener(this);
         payment.setOnClickListener(this);
+        Intent intent = getIntent();
+        if(intent.getParcelableExtra("ledgerInfo") != null) {
+            update = 1;
+            ledgerInfo = intent.getParcelableExtra("ledgerInfo");
+            text.setText(ledgerInfo.getLedgerList());
+            value.setText(ledgerInfo.getAmount()+"");
+            if(ledgerInfo.getType().equals("+")){
+                chk = 0;
+                income.setBackgroundColor(Color.parseColor("#6699FF"));
+                payment.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            } else{
+                chk = 1;
+                payment.setBackgroundColor(Color.parseColor("#6699FF"));
+                income.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            }
+        } else {
+            ledgerInfo = new LedgerInfo();
+        }
 
     }
 
     @Override
     public void onClick(View view) {
         if (R.id.okBtn == view.getId()) {
+            try{
             LedgerDB = Room.databaseBuilder(getApplicationContext(),
-                    LedgerDB.class, "LEDGER")
+                    com.example.student.roomdemo.Database.LedgerDB.class, "LEDGER")
                     .build();
             final String text = this.text.getText().toString();
             final int value = Integer.valueOf(this.value.getText().toString());
@@ -46,17 +68,25 @@ public class AddLedger extends AppCompatActivity implements View.OnClickListener
 
                 @Override
                 protected LedgerInfo doInBackground(Void... voids) {
-                    LedgerInfo ledgerInfo = new LedgerInfo();
                     ledgerInfo.setLedgerList(text);
-                    ledgerInfo.setValues(value);
-                    if(chk == 0) ledgerInfo.setType("true");
-                    else ledgerInfo.setType("false");
-                    LedgerDB.getLedgerInfoDAO().insert(ledgerInfo);
+                    ledgerInfo.setAmount(value);
+                    if(chk == 0) ledgerInfo.setType("+");
+                    else ledgerInfo.setType("-");
+                    if(update == 1){
+                        LedgerDB.getLedgerInfoDAO().update(ledgerInfo);
+                    } else {
+                        LedgerDB.getLedgerInfoDAO().insert(ledgerInfo);
+                    }
                     return null;
                 }
             }.execute();
 
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
             finish();
+            } catch(Exception e){
+                Toast.makeText(this, "Please complete the infomation", Toast.LENGTH_LONG).show();
+            }
         } else if (R.id.income == view.getId()) {
             chk = 0;
             income.setBackgroundColor(Color.parseColor("#6699FF"));
