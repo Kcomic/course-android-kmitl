@@ -45,12 +45,7 @@ public class MainActivityTest {
                 allOf(withId(R.id.buttonAdded), withText("ADDED"), isDisplayed()));
         appCompatButton.perform(click());
 
-        ViewInteraction appCompatButton2 = onView(
-                allOf(withId(android.R.id.button1), withText("OK"),
-                        withParent(allOf(withClassName(is("com.android.internal.widget.ButtonBarLayout")),
-                                withParent(withClassName(is("android.widget.LinearLayout"))))),
-                        isDisplayed()));
-        appCompatButton2.perform(click());
+        onView(allOf(withId(android.R.id.button1), withText("OK"))).perform(click());
         SystemClock.sleep(2000);
 
     }
@@ -66,12 +61,7 @@ public class MainActivityTest {
                 allOf(withId(R.id.buttonAdded), withText("ADDED"), isDisplayed()));
         appCompatButton.perform(click());
 
-        ViewInteraction appCompatButton2 = onView(
-                allOf(withId(android.R.id.button1), withText("OK"),
-                        withParent(allOf(withClassName(is("com.android.internal.widget.ButtonBarLayout")),
-                                withParent(withClassName(is("android.widget.LinearLayout"))))),
-                        isDisplayed()));
-        appCompatButton2.perform(click());
+        onView(allOf(withId(android.R.id.button1), withText("OK"))).perform(click());
         SystemClock.sleep(1500);
 
     }
@@ -97,13 +87,7 @@ public class MainActivityTest {
         ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.buttonAdded), withText("ADDED"), isDisplayed()));
         appCompatButton.perform(click());
-
-        ViewInteraction appCompatButton2 = onView(
-                allOf(withId(android.R.id.button1), withText("OK"),
-                        withParent(allOf(withClassName(is("com.android.internal.widget.ButtonBarLayout")),
-                                withParent(withClassName(is("android.widget.LinearLayout"))))),
-                        isDisplayed()));
-        appCompatButton2.perform(click());
+        onView(allOf(withId(android.R.id.button1), withText("OK"))).perform(click());
         SystemClock.sleep(2000);
 
 
